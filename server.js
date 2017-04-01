@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const MongoClient = require('mongodb').MongoClient;
+const BookSchema = require('./book');
 
 const app = express();
 const port = 3000;
@@ -27,13 +28,18 @@ app.get('/', (req, res) => {
 });
 
 app.post('/titles', (req, res) => {
-  db.collections('book').save(req.body, (err, result) => {
-    console.log(req.body);
+  const book = new BookSchema;
+  book.title = req.body.title;
+  book.description = req.body.description;
+
+  db.collection('book')
+  .save(book, (err, result) => {
+
     if(err) {
       return console.error(err)
     }
 
-    console.log.info('Saved to database');
-    res.rederict('/');
+    console.info('Saved to database');
+    res.redirect('/');
   })
 });
